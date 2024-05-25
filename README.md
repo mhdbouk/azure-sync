@@ -13,8 +13,8 @@ This script retrieves environment variables from an Azure App Service and adds t
 1. Clone this repository and navigate to the directory containing `azure-sync.sh` and `install.sh`.
 
     ```bash
-    git clone https://github.com/mhdbouk/azure-sync-settings
-    cd azure-sync-settings
+    git clone https://github.com/mhdbouk/azure-sync
+    cd azure-sync
     ```
 
 2. Run the installation script.
