@@ -2,6 +2,11 @@
 
 This script retrieves environment variables from an Azure App Service and adds them to your local .NET secrets. If the environment variable value is a reference to an Azure KeyVault secret, the script retrieves the actual secret value from Azure KeyVault.
 
+![image](https://github.com/mhdbouk/azure-sync/assets/114245392/4d7e5b1b-50e5-40fd-891f-f5d5b93e0499)
+
+![image](https://github.com/mhdbouk/azure-sync/assets/114245392/865f4e55-b8aa-4afd-9cdc-2fa16a1878d2)
+
+
 ## Prerequisites
 
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
