@@ -3,6 +3,24 @@
 # Author: Mohamad Dbouk
 # Website: https://mdbouk.com
 
+# function to retrieve the value of a secret from Azure KeyVault
+get_keyvault_secret() {
+    local keyVaultValue=$1
+    local value
+
+    local keyvault_name=$(echo $keyVaultValue | sed -n 's|.*SecretUri=https://\([^\.]*\).*|\1|p')
+    local secret_name=$(echo $keyVaultValue | sed -n 's|.*vault.azure.net/secrets/\([^/)]*\).*|\1|p')
+    local version=$(echo $keyVaultValue | sed -n 's|.*vault.azure.net/secrets/'$secret_name'/\([^)]*\).*|\1|p')
+
+    # if version is not empty, then get the secret value with version
+    if [ -z "$version" ]; then
+        value=$(az keyvault secret show --name $secret_name --vault-name $keyvault_name --query "value" --output tsv)
+    else
+        value=$(az keyvault secret show --name $secret_name --vault-name $keyvault_name --version $version --query "value" --output tsv)
+    fi
+    echo $value
+}
+
 # If the first argument is --help or no arguments are provided, then print the help message and exit
 if [ "$1" == "--help" ] || [ $# -ne 2 ]; then
     printf "\e[32m"
@@ -73,20 +91,3 @@ for row in $(echo "${env_variables}" | jq -r '.[] | @base64'); do
 done
 echo "Environment variables retrieved from Azure and added to local dotnet secret."
 
-# function to retrieve the value of a secret from Azure KeyVault
-get_keyvault_secret() {
-    local keyVaultValue=$1
-    local value
-
-    local keyvault_name=$(echo $keyVaultValue | sed -n 's|.*SecretUri=https://\([^\.]*\).*|\1|p')
-    local secret_name=$(echo $keyVaultValue | sed -n 's|.*vault.azure.net/secrets/\([^/)]*\).*|\1|p')
-    local version=$(echo $keyVaultValue | sed -n 's|.*vault.azure.net/secrets/'$secret_name'/\([^)]*\).*|\1|p')
-
-    # if version is not empty, then get the secret value with version
-    if [ -z "$version" ]; then
-        value=$(az keyvault secret show --name $secret_name --vault-name $keyvault_name --query "value" --output tsv)
-    else
-        value=$(az keyvault secret show --name $secret_name --vault-name $keyvault_name --version $version --query "value" --output tsv)
-    fi
-    echo $value
-}
