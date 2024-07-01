@@ -49,6 +49,14 @@ appname=$1
 app_resource_group=$2
 # Call Azure CLI to get all environment variables
 env_variables=$(az webapp config appsettings list --name $appname --resource-group $app_resource_group --query "[].{name:name,value:value}" --output json)
+connection_strings=$(az webapp config connection-string list --name $appname --resource-group $app_resource_group --query "[].{name:name,value:value}" --output json)
+# Loop through all connectionstrings and add ConnectionStrings: prefix to the name
+connection_strings=$(echo $connection_strings | jq '[.[] | {name: ("ConnectionStrings:" + .name), value: .value}]')
+# Merge the environment variables and connection strings
+env_variables=$(echo $env_variables $connection_strings | jq -s '.[0] + .[1]')
+# Order the environment variables by name
+env_variables=$(echo $env_variables | jq 'sort_by(.name)')
+
 # Check if Azure CLI command was successful
 if [ $? -ne 0 ]; then
     printf "\e[31mFailed to retrieve environment variables from Azure.\e[0m\n"
